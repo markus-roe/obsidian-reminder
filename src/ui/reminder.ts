@@ -18,7 +18,8 @@ export class ReminderModal {
     onMute: () => void,
     onOpenFile: () => void
   ) {
-    if (!this.isSystemNotification()) {
+    // if (!this.isSystemNotification()) {
+    if (false) {
       this.showBuiltinReminder(reminder, onRemindMeLater, onDone, onMute, onOpenFile);
     } else {
       // Show system notification
@@ -27,6 +28,32 @@ export class ReminderModal {
         title: "Obsidian Reminder",
         body: reminder.title,
       });
+
+      const ntfyTopic = 'obsidian-push-notifier741';
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "https://ntfy.sh/", true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            console.log("Notification sent successfully");
+          } else {
+            console.error("Failed to send notification", xhr.statusText);
+          }
+        }
+      };
+
+      let data = JSON.stringify({
+        "topic": ntfyTopic,
+        "title": reminder.title,
+        "message": "Reminder: " + reminder.title,
+        "click": `obsidian://open?vault=MarkusVault&file=${encodeURIComponent(reminder.file)}`
+      });
+
+      xhr.send(data);
+
+
       n.on("click", () => {
         n.close();
         this.showBuiltinReminder(reminder, onRemindMeLater, onDone, onMute, onOpenFile);
