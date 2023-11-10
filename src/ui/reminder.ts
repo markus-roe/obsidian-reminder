@@ -9,7 +9,7 @@ const electron = require("electron");
 
 export class ReminderModal {
 
-  constructor(private app: App, private useSystemNotification: ReadOnlyReference<boolean>, private laters: ReadOnlyReference<Array<Later>>) { }
+  constructor(private app: App, private usePhonePushNotifications: ReadOnlyReference<boolean>, private ntfyTopic: ReadOnlyReference<string>, private useSystemNotification: ReadOnlyReference<boolean>, private laters: ReadOnlyReference<Array<Later>>) { }
 
   public show(
     reminder: Reminder,
@@ -18,8 +18,7 @@ export class ReminderModal {
     onMute: () => void,
     onOpenFile: () => void
   ) {
-    // if (!this.isSystemNotification()) {
-    if (false) {
+    if (!this.isSystemNotification()) {
       this.showBuiltinReminder(reminder, onRemindMeLater, onDone, onMute, onOpenFile);
     } else {
       // Show system notification
@@ -29,7 +28,6 @@ export class ReminderModal {
         body: reminder.title,
       });
 
-      const ntfyTopic = 'obsidian-push-notifier741';
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "https://ntfy.sh/", true);
       xhr.setRequestHeader("Content-Type", "application/json");
@@ -45,10 +43,10 @@ export class ReminderModal {
       };
 
       let data = JSON.stringify({
-        "topic": ntfyTopic,
+        "topic": this.ntfyTopic,
         "title": reminder.title,
         "message": "Reminder: " + reminder.title,
-        "click": `obsidian://open?vault=MarkusVault&file=${encodeURIComponent(reminder.file)}`
+        "click": `obsidian://open?vault=${this.app.vault}&file=${encodeURIComponent(reminder.file)}`
       });
 
       xhr.send(data);
@@ -94,7 +92,7 @@ export class ReminderModal {
   }
 
   private isSystemNotification() {
-    if (this.isMobile()) {
+    if (this.isMobile() && !this.usePhonePushNotifications) {
       return false;
     }
     return this.useSystemNotification.value;

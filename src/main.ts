@@ -57,7 +57,7 @@ export default class ReminderPlugin extends Plugin {
       this.viewProxy,
       this.reminders
     );
-    this.reminderModal = new ReminderModal(this.app, SETTINGS.useSystemNotification, SETTINGS.laters);
+    this.reminderModal = new ReminderModal(this.app, SETTINGS.usePhonePushNotifications, SETTINGS.ntfyTopic, SETTINGS.useSystemNotification, SETTINGS.laters);
     this.autoComplete = new AutoComplete(SETTINGS.autoCompleteTrigger);
   }
 
@@ -267,7 +267,7 @@ export default class ReminderPlugin extends Plugin {
           continue;
         }
         if (previousReminder) {
-          while(previousReminder.beingDisplayed) {
+          while (previousReminder.beingDisplayed) {
             // Displaying too many reminders at once can cause crashes on
             // mobile. We use `beingDisplayed` to wait for the current modal to
             // be dismissed before displaying the next.

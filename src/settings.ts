@@ -23,6 +23,9 @@ class Settings {
   linkDatesToDailyNotes: SettingModel<boolean, boolean>;
   editDetectionSec: SettingModel<number, number>;
   reminderCheckIntervalSec: SettingModel<number, number>;
+  usePhonePushNotifications: SettingModel<boolean, boolean>;
+  ntfyTopic: SettingModel<string, string>;
+
 
   constructor() {
     const reminderFormatSettings = new ReminderFormatSettings(this.settings);
@@ -147,6 +150,23 @@ class Settings {
       .desc("Interval(in seconds) to periodically check whether or not you should be notified of reminders.  You will need to restart Obsidian for this setting to take effect.")
       .number(5)
       .build(new RawSerde());
+    // Define the setting for enabling/disabling phone push notifications
+    this.usePhonePushNotifications = this.settings.newSettingBuilder()
+      .key("usePhonePushNotifications")
+      .name("Enable Phone Push Notifications")
+      .desc("Toggle to enable or disable phone push notifications via ntfy.sh")
+      .toggle(false)
+      .build(new RawSerde());
+
+    // Define the setting for specifying the ntfy topic
+    this.ntfyTopic = this.settings.newSettingBuilder()
+      .key("ntfyTopic")
+      .name("ntfy Topic")
+      .desc("Specify the topic for ntfy.sh notifications")
+      .text("")
+      .placeHolder("Enter your ntfy topic here")
+      .build(new RawSerde());
+
 
     this.settings
       .newGroup("Notification Settings")
@@ -187,6 +207,12 @@ class Settings {
       .addSettings(
         this.editDetectionSec,
         this.reminderCheckIntervalSec
+      );
+    this.settings
+      .newGroup("Phone Push Notifications - ntfy.sh")
+      .addSettings(
+        this.usePhonePushNotifications,
+        this.ntfyTopic
       );
 
     const config = new ReminderFormatConfig();
