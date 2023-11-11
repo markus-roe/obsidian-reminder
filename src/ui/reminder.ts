@@ -19,7 +19,7 @@ export class ReminderModal {
     onOpenFile: () => void
   ) {
 
-    if (this.usePhonePushNotifications) {
+    if (this.usePhonePushNotifications.value) {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "https://ntfy.sh/", true);
       xhr.setRequestHeader("Content-Type", "application/json");
@@ -35,7 +35,7 @@ export class ReminderModal {
       };
 
       let data = JSON.stringify({
-        "topic": this.ntfyTopic,
+        "topic": this.ntfyTopic.value,
         "title": reminder.title,
         "message": "Reminder: " + reminder.title,
         "click": `obsidian://open?vault=${this.app.vault}&file=${encodeURIComponent(reminder.file)}`
