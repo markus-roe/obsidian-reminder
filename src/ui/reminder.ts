@@ -19,6 +19,8 @@ export class ReminderModal {
     onOpenFile: () => void
   ) {
 
+    console.log(this.app.vault)
+
     if (this.usePhonePushNotifications.value) {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "https://ntfy.sh/", true);
@@ -38,7 +40,7 @@ export class ReminderModal {
         "topic": this.ntfyTopic.value,
         "title": reminder.title,
         "message": "Reminder: " + reminder.title,
-        "click": `obsidian://open?vault=${this.app.vault}&file=${encodeURIComponent(reminder.file)}`
+        "click": `obsidian://open?vault=${this.app.vault.getName()}&file=${encodeURIComponent(reminder.file)}`
       });
 
       xhr.send(data);
