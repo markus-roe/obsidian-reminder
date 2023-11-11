@@ -18,16 +18,8 @@ export class ReminderModal {
     onMute: () => void,
     onOpenFile: () => void
   ) {
-    if (!this.isSystemNotification()) {
-      this.showBuiltinReminder(reminder, onRemindMeLater, onDone, onMute, onOpenFile);
-    } else {
-      // Show system notification
-      const Notification = (electron as any).remote.Notification;
-      const n = new Notification({
-        title: "Obsidian Reminder",
-        body: reminder.title,
-      });
 
+    if (this.usePhonePushNotifications) {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "https://ntfy.sh/", true);
       xhr.setRequestHeader("Content-Type", "application/json");
@@ -50,6 +42,17 @@ export class ReminderModal {
       });
 
       xhr.send(data);
+    }
+
+    if (!this.isSystemNotification()) {
+      this.showBuiltinReminder(reminder, onRemindMeLater, onDone, onMute, onOpenFile);
+    } else {
+      // Show system notification
+      const Notification = (electron as any).remote.Notification;
+      const n = new Notification({
+        title: "Obsidian Reminder",
+        body: reminder.title,
+      });
 
 
       n.on("click", () => {
@@ -92,7 +95,7 @@ export class ReminderModal {
   }
 
   private isSystemNotification() {
-    if (this.isMobile() && !this.usePhonePushNotifications) {
+    if (this.isMobile()) {
       return false;
     }
     return this.useSystemNotification.value;
